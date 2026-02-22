@@ -1,0 +1,296 @@
+@import 'variables';
+
+// Clay Card Styling
+.clay-card {
+  background: $clay-surface;
+  border-radius: $border-radius-xl;
+  box-shadow: 9px 9px 16px $clay-shadow-dark, -9px -9px 16px $clay-shadow-light;
+  padding: $spacing-xl;
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 12px 12px 20px $clay-shadow-dark, -12px -12px 20px $clay-shadow-light;
+  }
+}
+
+.clay-card-inset {
+  background: $clay-surface;
+  border-radius: $border-radius-xl;
+  box-shadow: inset 6px 6px 12px $clay-shadow-dark, inset -6px -6px 12px $clay-shadow-light;
+  padding: $spacing-lg;
+}
+
+// Clay Button Styling
+.clay-button {
+  background: $clay-surface;
+  border: none;
+  border-radius: $border-radius-lg;
+  box-shadow: 6px 6px 12px $clay-shadow-dark, -6px -6px 12px $clay-shadow-light;
+  padding: 0.75rem 2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  color: $clay-text-primary;
+  font-size: $font-size-base;
+  min-height: 44px;
+
+  &:hover:not(:disabled) {
+    box-shadow: 8px 8px 16px $clay-shadow-dark, -8px -8px 16px $clay-shadow-light;
+  }
+
+  &:active:not(:disabled) {
+    box-shadow: inset 4px 4px 8px $clay-shadow-dark, inset -4px -4px 8px $clay-shadow-light;
+    transform: scale(0.98);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &.primary {
+    background: linear-gradient(135deg, $clay-primary, $clay-secondary);
+    color: white;
+  }
+
+  &.success {
+    background: $clay-success;
+    color: white;
+  }
+
+  &.warning {
+    background: $clay-warning;
+    color: white;
+  }
+
+  &.danger {
+    background: $clay-danger;
+    color: white;
+  }
+}
+
+// Clay Input Styling
+.clay-input {
+  background: $clay-surface;
+  border: none;
+  border-radius: $border-radius-md;
+  box-shadow: inset 4px 4px 8px $clay-shadow-dark, inset -4px -4px 8px $clay-shadow-light;
+  padding: 0.75rem 1rem;
+  width: 100%;
+  color: $clay-text-primary;
+  font-size: $font-size-base;
+  min-height: 44px;
+  transition: all 0.3s ease;
+
+  &:focus {
+    outline: none;
+    box-shadow: inset 6px 6px 10px $clay-shadow-dark, inset -6px -6px 10px $clay-shadow-light;
+  }
+
+  &::placeholder {
+    color: $clay-text-secondary;
+    opacity: 0.7;
+  }
+
+  &.error {
+    box-shadow: inset 4px 4px 8px rgba($clay-danger, 0.3), inset -4px -4px 8px $clay-shadow-light;
+  }
+}
+
+textarea.clay-input {
+  resize: vertical;
+  min-height: 100px;
+}
+
+// Clay Select Styling
+.clay-select {
+  @extend .clay-input;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%232d3748' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 3rem;
+}
+
+// Clay Checkbox & Radio
+.clay-checkbox,
+.clay-radio {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: $border-radius-sm;
+  background: $clay-surface;
+  box-shadow: inset 3px 3px 6px $clay-shadow-dark, inset -3px -3px 6px $clay-shadow-light;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+
+  &:checked {
+    background: $clay-primary;
+    box-shadow: 3px 3px 6px $clay-shadow-dark, -3px -3px 6px $clay-shadow-light;
+
+    &::after {
+      content: '✓';
+      position: absolute;
+      color: white;
+      font-size: 14px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+}
+
+.clay-radio {
+  border-radius: 50%;
+
+  &:checked::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+  }
+}
+
+// Clay Badge
+.clay-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: $border-radius-lg;
+  font-size: $font-size-sm;
+  font-weight: 600;
+  background: $clay-surface;
+  box-shadow: 4px 4px 8px $clay-shadow-dark, -4px -4px 8px $clay-shadow-light;
+
+  &.success {
+    background: $clay-success;
+    color: white;
+  }
+
+  &.warning {
+    background: $clay-warning;
+    color: white;
+  }
+
+  &.danger {
+    background: $clay-danger;
+    color: white;
+  }
+
+  &.primary {
+    background: $clay-primary;
+    color: white;
+  }
+}
+
+// Clay Progress Bar
+.clay-progress {
+  background: $clay-surface;
+  border-radius: $border-radius-lg;
+  box-shadow: inset 4px 4px 8px $clay-shadow-dark, inset -4px -4px 8px $clay-shadow-light;
+  height: 20px;
+  overflow: hidden;
+  position: relative;
+
+  .clay-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, $clay-primary, $clay-secondary);
+    border-radius: $border-radius-lg;
+    transition: width 0.6s ease;
+    box-shadow: 2px 2px 4px rgba($clay-shadow-dark, 0.3);
+  }
+}
+
+// Clay Modal/Dialog
+.clay-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: $z-index-modal;
+  padding: $spacing-md;
+
+  .clay-modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(4px);
+  }
+
+  .clay-modal-content {
+    position: relative;
+    z-index: 1;
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    @extend .clay-card;
+  }
+}
+
+// Clay Table
+.clay-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 0.5rem;
+
+  thead th {
+    background: $clay-surface;
+    padding: $spacing-md;
+    text-align: left;
+    font-weight: 600;
+    color: $clay-text-primary;
+    border-radius: $border-radius-md;
+    box-shadow: 4px 4px 8px $clay-shadow-dark, -4px -4px 8px $clay-shadow-light;
+  }
+
+  tbody tr {
+    background: $clay-surface;
+    border-radius: $border-radius-md;
+    box-shadow: 4px 4px 8px $clay-shadow-dark, -4px -4px 8px $clay-shadow-light;
+    transition: all 0.3s ease;
+
+    &:hover {
+      box-shadow: 6px 6px 12px $clay-shadow-dark, -6px -6px 12px $clay-shadow-light;
+    }
+
+    td {
+      padding: $spacing-md;
+
+      &:first-child {
+        border-top-left-radius: $border-radius-md;
+        border-bottom-left-radius: $border-radius-md;
+      }
+
+      &:last-child {
+        border-top-right-radius: $border-radius-md;
+        border-bottom-right-radius: $border-radius-md;
+      }
+    }
+  }
+}
+
+// Utility Classes
+.clay-shadow-sm {
+  box-shadow: 3px 3px 6px $clay-shadow-dark, -3px -3px 6px $clay-shadow-light;
+}
+
+.clay-shadow-md {
+  box-shadow: 6px 6px 12px $clay-shadow-dark, -6px -6px 12px $clay-shadow-light;
+}
+
+.clay-shadow-lg {
+  box-shadow: 9px 9px 18px $clay-shadow-dark, -9px -9px 18px $clay-shadow-light;
+}
+
+.clay-shadow-inset {
+  box-shadow: inset 4px 4px 8px $clay-shadow-dark, inset -4px -4px 8px $clay-shadow-light;
+}
