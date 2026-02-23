@@ -3,4 +3,4 @@ export const environment = {
   apiUrl: 'https://localhost:7117/api',
   appName: 'Smart Attendance System'
 };
-//etst
+//test
