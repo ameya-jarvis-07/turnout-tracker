@@ -1,0 +1,530 @@
+// Dark Theme Variables
+$dark-background: #1a202c;
+$dark-surface: #2d3748;
+$dark-surface-raised: #374151;
+$dark-text-primary: #f7fafc;
+$dark-text-secondary: #cbd5e0;
+$dark-text-muted: #a0aec0;
+$dark-border: #4a5568;
+$dark-shadow-light: rgba(0, 0, 0, 0.3);
+$dark-shadow-dark: rgba(0, 0, 0, 0.5);
+
+// Dark Theme
+.dark-theme {
+  // Background
+  background: $dark-background;
+  color: $dark-text-primary;
+
+  body {
+    background: $dark-background;
+    color: $dark-text-primary;
+  }
+
+  // Clay card dark mode
+  .clay-card {
+    background: $dark-surface;
+    box-shadow: 4px 4px 12px $dark-shadow-dark,
+                -4px -4px 12px rgba(255, 255, 255, 0.02);
+    color: $dark-text-primary;
+
+    &.clay-card-inset {
+      background: $dark-background;
+      box-shadow: inset 3px 3px 6px $dark-shadow-dark,
+                  inset -3px -3px 6px rgba(255, 255, 255, 0.02);
+    }
+  }
+
+  // Buttons
+  .clay-button {
+    background: $dark-surface-raised;
+    color: $dark-text-primary;
+    box-shadow: 4px 4px 8px $dark-shadow-dark,
+                -2px -2px 4px rgba(255, 255, 255, 0.05);
+
+    &:hover:not(:disabled) {
+      box-shadow: 2px 2px 4px $dark-shadow-dark,
+                  -2px -2px 4px rgba(255, 255, 255, 0.05);
+    }
+
+    &:active:not(:disabled) {
+      box-shadow: inset 2px 2px 4px $dark-shadow-dark,
+                  inset -2px -2px 4px rgba(255, 255, 255, 0.02);
+    }
+
+    &.primary {
+      background: linear-gradient(135deg, #5a7a9b, #6b8aab);
+      color: white;
+    }
+
+    &.danger {
+      background: linear-gradient(135deg, #cc2f4f, #bc2747);
+      color: white;
+    }
+  }
+
+  // Form inputs
+  .clay-input,
+  .clay-select {
+    background: $dark-background;
+    color: $dark-text-primary;
+    box-shadow: inset 2px 2px 4px $dark-shadow-dark,
+                inset -2px -2px 4px rgba(255, 255, 255, 0.03);
+    border: 1px solid $dark-border;
+
+    &:focus {
+      box-shadow: inset 3px 3px 6px $dark-shadow-dark,
+                  inset -2px -2px 4px rgba(255, 255, 255, 0.03);
+    }
+
+    &::placeholder {
+      color: $dark-text-muted;
+    }
+  }
+
+  // Text colors - Global overrides with !important to override component styles
+  h1, h2, h3, h4, h5, h6 {
+    color: $dark-text-primary !important;
+  }
+
+  p {
+    color: $dark-text-secondary !important;
+  }
+
+  label {
+    color: $dark-text-primary !important;
+  }
+
+  span {
+    color: $dark-text-secondary !important;
+  }
+
+  small {
+    color: $dark-text-muted !important;
+  }
+
+  strong {
+    color: $dark-text-primary !important;
+  }
+
+  // Generic text classes
+  .text-primary {
+    color: $dark-text-primary !important;
+  }
+
+  .text-secondary {
+    color: $dark-text-secondary !important;
+  }
+
+  .text-muted {
+    color: $dark-text-muted !important;
+  }
+
+  // Navbar
+  .navbar {
+    background: $dark-surface;
+    
+    .brand-title {
+      color: #8b9dc3 !important;
+    }
+
+    .user-name {
+      color: $dark-text-primary !important;
+    }
+
+    .user-role {
+      color: $dark-text-muted !important;
+    }
+
+    .dropdown-menu {
+      background: $dark-surface-raised;
+    }
+
+    .dropdown-item {
+      color: $dark-text-primary !important;
+
+      &:hover {
+        background: rgba(124, 156, 191, 0.2);
+      }
+
+      &.logout {
+        color: #f56a85 !important;
+      }
+    }
+
+    .dropdown-divider {
+      background: $dark-border !important;
+    }
+
+    .mobile-menu-toggle span {
+      background: $dark-text-primary !important;
+    }
+  }
+
+  // Sidebar
+  .sidebar {
+    background: $dark-surface;
+
+    h3 {
+      color: $dark-text-primary !important;
+    }
+
+    .nav-item {
+      color: $dark-text-primary !important;
+
+      &:hover {
+        background: rgba(124, 156, 191, 0.15);
+      }
+
+      &.active {
+        background: linear-gradient(135deg, #5a7a9b, #6b8aab);
+        color: white !important;
+      }
+    }
+
+    .nav-icon {
+      color: $dark-text-primary !important;
+    }
+
+    .nav-text {
+      color: $dark-text-primary !important;
+    }
+  }
+
+  // Stats cards
+  .stats-card {
+    background: $dark-surface;
+  }
+
+  // Settings specific
+  .settings-card {
+    .card-header {
+      background: linear-gradient(135deg, rgba(90, 122, 155, 0.1), rgba(107, 138, 171, 0.1));
+      border-bottom-color: $dark-border;
+
+      h3 {
+        color: $dark-text-primary !important;
+      }
+    }
+
+    .password-notice {
+      background: linear-gradient(135deg, rgba(90, 122, 155, 0.15), rgba(107, 138, 171, 0.15));
+
+      .notice-title {
+        color: $dark-text-primary !important;
+      }
+
+      .notice-text {
+        color: $dark-text-secondary !important;
+
+        strong {
+          color: #9eb7d4 !important;
+        }
+      }
+    }
+
+    .section-description {
+      color: $dark-text-secondary !important;
+    }
+
+    .setting-item {
+      background: $dark-background;
+      box-shadow: 2px 2px 4px $dark-shadow-dark,
+                  -2px -2px 4px rgba(255, 255, 255, 0.03);
+
+      .setting-info {
+        label {
+          color: $dark-text-primary !important;
+        }
+
+        p {
+          color: $dark-text-muted !important;
+        }
+      }
+    }
+
+    .form-hint {
+      color: $dark-text-muted !important;
+    }
+
+    .form-group {
+      label {
+        color: $dark-text-primary !important;
+      }
+    }
+
+    .language-demo {
+      background: rgba(90, 122, 155, 0.1) !important;
+      border-left-color: #9eb7d4;
+
+      p {
+        color: $dark-text-secondary !important;
+
+        strong {
+          color: #9eb7d4 !important;
+        }
+      }
+    }
+  }
+
+  // Page headers
+  .page-header {
+    h1 {
+      color: $dark-text-primary !important;
+    }
+  }
+
+  // Form elements
+  .form-group {
+    label {
+      color: $dark-text-primary !important;
+    }
+
+    .form-hint {
+      color: $dark-text-muted !important;
+    }
+  }
+
+  // Toggle switch
+  .toggle-switch {
+    .toggle-slider {
+      background: #4a5568;
+    }
+  }
+
+  // Badge
+  .clay-badge {
+    &.success {
+      background: linear-gradient(135deg, #5a8a3d, #4a7a2d);
+    }
+
+    &.warning {
+      background: linear-gradient(135deg, #cc8520, #bc7510);
+    }
+
+    &.danger {
+      background: linear-gradient(135deg, #cc2f4f, #bc2747);
+    }
+  }
+
+  // Charts and visualizations
+  .chart-container {
+    background: $dark-surface;
+  }
+
+  // Empty states
+  .empty-state {
+    color: $dark-text-secondary;
+
+    h3 {
+      color: $dark-text-primary;
+    }
+  }
+
+  // Notifications
+  .notification-item {
+    background: $dark-surface-raised;
+    border-bottom-color: $dark-border;
+
+    &.unread {
+      background: rgba(90, 122, 155, 0.1);
+    }
+  }
+
+  // Profile page
+  .profile-card {
+    .profile-info {
+      h2 {
+        color: $dark-text-primary !important;
+      }
+
+      p {
+        color: $dark-text-muted !important;
+      }
+    }
+
+    .info-label {
+      color: $dark-text-muted !important;
+    }
+
+    .info-value {
+      color: $dark-text-primary !important;
+    }
+  }
+
+  // Dashboard elements
+  .dashboard-card {
+    h3, h4 {
+      color: $dark-text-primary !important;
+    }
+
+    p {
+      color: $dark-text-secondary !important;
+    }
+
+    .card-title {
+      color: $dark-text-primary !important;
+    }
+
+    .card-subtitle {
+      color: $dark-text-muted !important;
+    }
+
+    .card-value {
+      color: $dark-text-primary !important;
+    }
+
+    .card-label {
+      color: $dark-text-muted !important;
+    }
+  }
+
+  // Subject cards and lists
+  .subject-card,
+  .session-card,
+  .attendance-card {
+    h3, h4 {
+      color: $dark-text-primary !important;
+    }
+
+    p, span {
+      color: $dark-text-secondary !important;
+    }
+
+    .subject-name,
+    .session-name {
+      color: $dark-text-primary !important;
+    }
+
+    .subject-code {
+      color: $dark-text-muted !important;
+    }
+
+    .time,
+    .date {
+      color: $dark-text-secondary !important;
+    }
+  }
+
+  // Table elements
+  table {
+    thead {
+      th {
+        color: $dark-text-primary !important;
+      }
+    }
+
+    tbody {
+      td {
+        color: $dark-text-secondary !important;
+      }
+    }
+  }
+
+  // List items
+  .list-item {
+    color: $dark-text-secondary !important;
+
+    .item-title {
+      color: $dark-text-primary !important;
+    }
+
+    .item-subtitle {
+      color: $dark-text-muted !important;
+    }
+  }
+}
+
+// Compact View Styles
+.compact-view {
+  .clay-card {
+    padding: 1rem !important;
+  }
+
+  .page-header {
+    margin-bottom: 1rem !important;
+
+    h1 {
+      font-size: 1.5rem !important;
+    }
+  }
+
+  .stats-grid {
+    gap: 1rem !important;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+  }
+
+  .stats-card {
+    padding: 1rem !important;
+
+    .card-icon {
+      font-size: 2rem !important;
+    }
+
+    .card-title {
+      font-size: 0.75rem !important;
+    }
+
+    .card-value {
+      font-size: 1.5rem !important;
+    }
+  }
+
+  .settings-card {
+    .card-header {
+      padding: 1rem !important;
+
+      h3 {
+        font-size: 1rem !important;
+      }
+    }
+
+    .setting-item {
+      padding: 1rem !important;
+    }
+  }
+
+  .sidebar {
+    .nav-item {
+      padding: 0.5rem 0.75rem !important;
+      font-size: 0.8125rem !important;
+    }
+  }
+
+  .navbar {
+    .navbar-container {
+      padding: 0.375rem 0.75rem !important;
+    }
+
+    .brand-title {
+      font-size: 1.25rem !important;
+    }
+  }
+
+  .form-group {
+    margin-bottom: 1rem !important;
+  }
+
+  .settings-list {
+    gap: 1rem !important;
+  }
+}
+
+// Reduced Motion
+.reduce-motion,
+.reduce-motion * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
