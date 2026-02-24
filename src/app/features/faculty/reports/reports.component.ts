@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
@@ -11,19 +11,76 @@ import { SidebarComponent, MenuItem } from '../../shared/components/sidebar/side
   template: `
     <div class="dashboard-layout">
       <app-navbar></app-navbar>
-      
       <div class="dashboard-content">
         <app-sidebar [menuItems]="menuItems"></app-sidebar>
-        
         <main class="main-content">
           <div class="page-header">
-            <h1>Reports</h1>
+            <h1>Faculty Reports</h1>
+            <p>View comprehensive teaching and attendance reports</p>
           </div>
 
-          <div class="clay-card">
-            <p>Reports feature coming soon...</p>
-            <p>View attendance reports for your subjects</p>
+          <div class="reports-grid">
+            <div class="report-card clay-card" (click)="generateReport('attendance')">
+              <div class="report-icon">📊</div>
+              <h3>Attendance Report</h3>
+              <p>Overall attendance statistics for your subjects</p>
+              <button class="clay-button full-width">Generate Report</button>
+            </div>
+
+            <div class="report-card clay-card" (click)="generateReport('subjects')">
+              <div class="report-icon">📚</div>
+              <h3>Subject Report</h3>
+              <p>Detailed metrics for each subject you teach</p>
+              <button class="clay-button full-width">Generate Report</button>
+            </div>
+
+            <div class="report-card clay-card" (click)="generateReport('students')">
+              <div class="report-icon">👨‍🎓</div>
+              <h3>Student Performance</h3>
+              <p>Individual student attendance and statistics</p>
+              <button class="clay-button full-width">Generate Report</button>
+            </div>
+
+            <div class="report-card clay-card" (click)="generateReport('sessions')">
+              <div class="report-icon">🔐</div>
+              <h3>Session Report</h3>
+              <p>Historical data and statistics of your sessions</p>
+              <button class="clay-button full-width">Generate Report</button>
+            </div>
+
+            <div class="report-card clay-card" (click)="generateReport('trends')">
+              <div class="report-icon">📈</div>
+              <h3>Attendance Trends</h3>
+              <p>Analyze attendance patterns over time</p>
+              <button class="clay-button full-width">Generate Report</button>
+            </div>
+
+            <div class="report-card clay-card" (click)="generateReport('summary')">
+              <div class="report-icon">📋</div>
+              <h3>Teaching Summary</h3>
+              <p>Complete overview of your teaching activities</p>
+              <button class="clay-button full-width">Generate Report</button>
+            </div>
           </div>
+
+          @if (selectedReport) {
+            <div class="report-details clay-card">
+              <div class="report-header">
+                <h2>{{ selectedReport }} Report</h2>
+                <div class="report-actions">
+                  <button class="clay-button secondary" (click)="downloadReport()">
+                    📥 Download PDF
+                  </button>
+                  <button class="clay-button secondary" (click)="shareReport()">
+                    📤 Share
+                  </button>
+                </div>
+              </div>
+              <div class="report-content">
+                <p>Report data will be generated and displayed here...</p>
+              </div>
+            </div>
+          }
         </main>
       </div>
     </div>
@@ -48,14 +105,107 @@ import { SidebarComponent, MenuItem } from '../../shared/components/sidebar/side
       margin-bottom: 2rem;
 
       h1 {
-        margin: 0;
+        margin: 0 0 0.5rem 0;
         color: #2d3748;
         font-size: 2rem;
+      }
+
+      p {
+        margin: 0;
+        color: #718096;
+        font-size: 0.875rem;
+      }
+    }
+
+    .reports-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .report-card {
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(124, 156, 191, 0.15);
+      }
+
+      .report-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      }
+
+      h3 {
+        margin: 0 0 0.5rem 0;
+        color: #2d3748;
+        font-size: 1.125rem;
+      }
+
+      p {
+        margin: 0 0 1.5rem 0;
+        color: #718096;
+        font-size: 0.875rem;
+      }
+    }
+
+    .report-details {
+      margin-top: 2rem;
+      padding: 2rem;
+
+      .report-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        border-bottom: 1px solid rgba(163, 177, 198, 0.2);
+        padding-bottom: 1rem;
+
+        h2 {
+          margin: 0;
+          color: #2d3748;
+        }
+
+        .report-actions {
+          display: flex;
+          gap: 0.75rem;
+        }
+      }
+
+      .report-content {
+        color: #718096;
+        min-height: 200px;
+      }
+    }
+
+    .full-width {
+      width: 100%;
+    }
+
+    @media (max-width: 992px) {
+      .dashboard-content {
+        flex-direction: column;
+      }
+
+      .reports-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .report-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
       }
     }
   `]
 })
 export class FacultyReportsComponent implements OnInit {
+  selectedReport: string | null = null;
+
   menuItems: MenuItem[] = [
     { label: 'Dashboard', route: '/faculty/dashboard', icon: '🏠' },
     { label: 'My Subjects', route: '/faculty/my-subjects', icon: '📚' },
@@ -64,5 +214,18 @@ export class FacultyReportsComponent implements OnInit {
     { label: 'Reports', route: '/faculty/reports', icon: '📊' }
   ];
 
-  ngOnInit() {}
+  ngOnInit() {
+  }
+
+  generateReport(reportType: string) {
+    this.selectedReport = reportType.charAt(0).toUpperCase() + reportType.slice(1);
+  }
+
+  downloadReport() {
+    alert(`Downloading ${this.selectedReport} report as PDF...`);
+  }
+
+  shareReport() {
+    alert(`Sharing ${this.selectedReport} report...`);
+  }
 }

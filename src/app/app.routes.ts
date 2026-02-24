@@ -43,11 +43,15 @@ export const routes: Routes = [
       },
       {
         path: 'subjects',
-        loadComponent: () => import('./features/admin/subjects/subjects.component').then(m => m.SubjectsComponent)
+        loadComponent: () => import('./features/admin/subjects/subjects.component').then(m => m.AdminSubjectsComponent)
       },
       {
         path: 'subjects/create',
-        loadComponent: () => import('./features/admin/subjects/create-subject.component').then(m => m.CreateSubjectComponent)
+        loadComponent: () => import('./features/admin/subjects/create/create-subject.component').then(m => m.CreateSubjectComponent)
+      },
+      {
+        path: 'subjects/edit/:id',
+        loadComponent: () => import('./features/admin/subjects/edit/edit-subject.component').then(m => m.EditSubjectComponent)
       },
       {
         path: 'device-requests',
@@ -98,12 +102,20 @@ export const routes: Routes = [
         loadComponent: () => import('./features/faculty/reports/reports.component').then(m => m.FacultyReportsComponent)
       },
       {
-        path: 'active-session/:id',
-        loadComponent: () => import('./features/faculty/active-session/active-session.component').then(m => m.ActiveSessionComponent)
+        path: 'subject-attendance/:id',
+        loadComponent: () => import('./features/faculty/my-subjects/my-subjects.component').then(m => m.MySubjectsComponent)
       },
       {
-        path: 'subject-attendance/:id',
-        loadComponent: () => import('./features/faculty/subject-attendance/subject-attendance.component').then(m => m.SubjectAttendanceComponent)
+        path: 'active-session/:id',
+        loadComponent: () => import('./features/faculty/session-history/session-history.component').then(m => m.SessionHistoryComponent)
+      },
+      {
+        path: 'subject-report/:id',
+        loadComponent: () => import('./features/faculty/reports/reports.component').then(m => m.FacultyReportsComponent)
+      },
+      {
+        path: 'session-details/:id',
+        loadComponent: () => import('./features/faculty/session-history/session-history.component').then(m => m.SessionHistoryComponent)
       },
       {
         path: '',
@@ -139,7 +151,7 @@ export const routes: Routes = [
       },
       {
         path: 'subject-report/:id',
-        loadComponent: () => import('./features/student/subject-report/subject-report.component').then(m => m.SubjectReportComponent)
+        loadComponent: () => import('./features/student/my-attendance/my-attendance.component').then(m => m.MyAttendanceComponent)
       },
       {
         path: '',
