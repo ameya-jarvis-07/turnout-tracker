@@ -96,6 +96,7 @@ import { AuthService } from '../../../core/services/auth.service';
               <option value="">Select your role</option>
               <option value="Student">Student</option>
               <option value="Faculty">Faculty</option>
+              <option value="Admin">Admin</option>
             </select>
             @if (isFieldInvalid('role')) {
               <span class="error-message">Please select a role</span>

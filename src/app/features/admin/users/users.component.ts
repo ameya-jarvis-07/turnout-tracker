@@ -1,13 +1,16 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from '../../shared/components/navbar/navbar.component';
 import { SidebarComponent, MenuItem } from '../../shared/components/sidebar/sidebar.component';
+import { AdminService } from '../../shared/services/admin.service';
+import { UserDto } from '../../../core/models/user.model';
 
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [CommonModule, RouterModule, NavbarComponent, SidebarComponent],
+  imports: [CommonModule, RouterModule, FormsModule, NavbarComponent, SidebarComponent],
   template: `
     <div class="dashboard-layout">
       <app-navbar></app-navbar>
@@ -35,16 +38,31 @@ import { SidebarComponent, MenuItem } from '../../shared/components/sidebar/side
           </div>
 
           <div class="search-section clay-card">
-            <input type="text" class="clay-input" placeholder="Search users by name or email..." />
+            <div class="search-wrapper">
+              <input 
+                type="text" 
+                class="clay-input" 
+                placeholder="Search users by name or email..." 
+                [(ngModel)]="searchQuery"
+                (input)="onSearchInput()" />
+              @if (loading()) {
+                <span class="loading-indicator">Loading...</span>
+              }
+            </div>
           </div>
 
-          @if (filteredUsers().length > 0) {
+          @if (loading()) {
+            <div class="loading-state clay-card">
+              <div class="spinner"></div>
+              <p>Loading users...</p>
+            </div>
+          } @else if (filteredUsers().length > 0) {
             <div class="users-list">
               @for (user of filteredUsers(); track user.userId) {
                 <div class="user-card clay-card">
                   <div class="user-header">
                     <div>
-                      <h3>{{ user.firstName }} {{ user.lastName }}</h3>
+                      <h3>{{ user.fullName }}</h3>
                       <p class="user-email">{{ user.email }}</p>
                     </div>
                     <span class="role-badge" [ngClass]="user.role">
@@ -53,26 +71,24 @@ import { SidebarComponent, MenuItem } from '../../shared/components/sidebar/side
                   </div>
                   <div class="user-details">
                     <div class="detail">
-                      <span class="label">Employee ID:</span>
-                      <span>{{ user.employeeId || '-' }}</span>
+                      <span class="label">User ID:</span>
+                      <span>{{ user.userId }}</span>
                     </div>
                     <div class="detail">
-                      <span class="label">Status:</span>
-                      <span class="status" [class.active]="user.active">
-                        {{ user.active ? '✓ Active' : '✕ Inactive' }}
-                      </span>
+                      <span class="label">Device ID:</span>
+                      <span>{{ user.registeredDeviceId || 'Not registered' }}</span>
                     </div>
                     <div class="detail">
                       <span class="label">Joined:</span>
-                      <span>{{ formatDate(user.createdDate) }}</span>
+                      <span>{{ formatDate(user.createdAt) }}</span>
                     </div>
                   </div>
                   <div class="actions">
-                    <button class="clay-button small" (click)="editUser(user.userId)">
-                      Edit
+                    <button class="clay-button small" (click)="viewUserDetails(user.userId)">
+                      View Details
                     </button>
-                    <button class="clay-button small" [class.danger]="user.active" (click)="toggleUserStatus(user.userId)">
-                      {{ user.active ? 'Deactivate' : 'Activate' }}
+                    <button class="clay-button small secondary" (click)="resetPassword(user.userId)">
+                      Reset Password
                     </button>
                   </div>
                 </div>
@@ -80,7 +96,11 @@ import { SidebarComponent, MenuItem } from '../../shared/components/sidebar/side
             </div>
           } @else {
             <div class="empty-state clay-card">
-              <p>No users found</p>
+              <div class="empty-icon">👥</div>
+              <p>No users found matching your search</p>
+              @if (searchQuery) {
+                <button class="clay-button" (click)="clearSearch()">Clear Search</button>
+              }
             </div>
           }
         </main>
@@ -148,6 +168,48 @@ import { SidebarComponent, MenuItem } from '../../shared/components/sidebar/side
 
     .search-section {
       margin-bottom: 2rem;
+      padding: 1rem;
+
+      .search-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+
+        input {
+          flex: 1;
+        }
+
+        .loading-indicator {
+          color: #718096;
+          font-size: 0.875rem;
+        }
+      }
+    }
+
+    .loading-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem 2rem;
+      gap: 1rem;
+
+      .spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid #e2e8f0;
+        border-top-color: var(--primary-color, #667eea);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      p {
+        color: #718096;
+      }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
 
     .users-list {
@@ -238,6 +300,15 @@ import { SidebarComponent, MenuItem } from '../../shared/components/sidebar/side
       text-align: center;
       padding: 3rem;
       color: #718096;
+
+      .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+      }
+
+      p {
+        margin-bottom: 1rem;
+      }
     }
 
     @media (max-width: 992px) {
@@ -252,8 +323,33 @@ import { SidebarComponent, MenuItem } from '../../shared/components/sidebar/side
   `]
 })
 export class UsersComponent implements OnInit {
+  private adminService = inject(AdminService);
+
   activeRole = signal<string>('all');
-  users = signal<any[]>([]);
+  users = signal<UserDto[]>([]);
+  loading = signal(true);
+  searchQuery = '';
+
+  // Computed filtered users based on role and search
+  filteredUsers = computed(() => {
+    let filtered = this.users();
+
+    // Filter by role
+    if (this.activeRole() !== 'all') {
+      filtered = filtered.filter(u => u.role === this.activeRole());
+    }
+
+    // Filter by search query
+    if (this.searchQuery.trim()) {
+      const query = this.searchQuery.toLowerCase();
+      filtered = filtered.filter(u => 
+        u.fullName.toLowerCase().includes(query) || 
+        u.email.toLowerCase().includes(query)
+      );
+    }
+
+    return filtered;
+  });
 
   menuItems: MenuItem[] = [
     { label: 'Dashboard', route: '/admin/dashboard', icon: '🏠' },
@@ -269,46 +365,19 @@ export class UsersComponent implements OnInit {
   }
 
   private loadUsers() {
-    // Mock data - replace with actual service calls
-    this.users.set([
-      {
-        userId: 1,
-        firstName: 'Admin',
-        lastName: 'User',
-        email: 'admin@example.com',
-        employeeId: 'A001',
-        role: 'Admin',
-        active: true,
-        createdDate: new Date('2024-01-15')
+    this.loading.set(true);
+    this.adminService.getAllUsers().subscribe({
+      next: (users) => {
+        this.users.set(users);
+        this.loading.set(false);
       },
-      {
-        userId: 2,
-        firstName: 'John',
-        lastName: 'Teacher',
-        email: 'john@example.com',
-        employeeId: 'F001',
-        role: 'Faculty',
-        active: true,
-        createdDate: new Date('2024-02-01')
-      },
-      {
-        userId: 3,
-        firstName: 'Jane',
-        lastName: 'Student',
-        email: 'jane@example.com',
-        employeeId: 'S001',
-        role: 'Student',
-        active: true,
-        createdDate: new Date('2024-03-01')
+      error: (error) => {
+        console.error('Error loading users:', error);
+        this.loading.set(false);
+        // Show error message to user
+        alert('Failed to load users. Please try again later.');
       }
-    ]);
-  }
-
-  filteredUsers() {
-    if (this.activeRole() === 'all') {
-      return this.users();
-    }
-    return this.users().filter(u => u.role === this.activeRole());
+    });
   }
 
   getTotalCount() {
@@ -319,19 +388,43 @@ export class UsersComponent implements OnInit {
     return this.users().filter(u => u.role === role).length;
   }
 
-  editUser(userId: number) {
-    alert(`Edit user ${userId}`);
+  onSearchInput() {
+    // Trigger change detection - computed signal will automatically update
   }
 
-  toggleUserStatus(userId: number) {
-    const user = this.users().find(u => u.userId === userId);
-    if (user) {
-      user.active = !user.active;
-      this.users.set([...this.users()]);
+  clearSearch() {
+    this.searchQuery = '';
+  }
+
+  viewUserDetails(userId: number) {
+    console.log('View user details:', userId);
+    // In production, navigate to user detail page or open modal
+    this.adminService.getUserById(userId).subscribe({
+      next: (user) => {
+        alert(`User Details:\n\nName: ${user.fullName}\nEmail: ${user.email}\nRole: ${user.role}\nUser ID: ${user.userId}\nDevice ID: ${user.registeredDeviceId || 'Not registered'}\nJoined: ${this.formatDate(user.createdAt)}`);
+      },
+      error: (error) => {
+        console.error('Error fetching user details:', error);
+        alert('Failed to load user details.');
+      }
+    });
+  }
+
+  resetPassword(userId: number) {
+    if (confirm('Are you sure you want to reset this user\'s password? They will receive an email with reset instructions.')) {
+      this.adminService.resetUserPassword(userId).subscribe({
+        next: () => {
+          alert('Password reset email sent successfully!');
+        },
+        error: (error) => {
+          console.error('Error resetting password:', error);
+          alert('Failed to reset password. Please try again.');
+        }
+      });
     }
   }
 
-  formatDate(date: Date): string {
+  formatDate(date: Date | string): string {
     return new Date(date).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
   }
 }

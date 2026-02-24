@@ -21,10 +21,10 @@ import { interval, Subscription } from 'rxjs';
           <div class="page-header">
             <div>
               <h1>Active Session Monitor</h1>
-              <p>Real-time session tracking</p>
+              <p>Real-time session tracking and student attendance</p>
             </div>
             <div class="header-actions">
-              <button class="clay-button" (click)="refreshSession()" [disabled]="loading()">
+              <button class="clay-button icon-button" (click)="refreshSession()" [disabled]="loading()">
                 🔄 Refresh
               </button>
               <button class="clay-button danger" (click)="closeSessionConfirm()">
@@ -42,9 +42,9 @@ import { interval, Subscription } from 'rxjs';
                 </div>
                 <span class="status-badge active">⚡ LIVE</span>
               </div>
-              <div class="session-stats">
+              <div class="session-stats-grid">
                 <div class="stat-item">
-                  <span class="stat-label">Started</span>
+                  <span class="stat-label">Started At</span>
                   <span class="stat-value">{{ formatTime(sessionData.startTime) }}</span>
                 </div>
                 <div class="stat-item">
@@ -56,33 +56,66 @@ import { interval, Subscription } from 'rxjs';
                   <span class="stat-value highlight">{{ sessionData.totalStudentsMarked }}</span>
                 </div>
                 <div class="stat-item">
-                  <span class="stat-label">Rate</span>
+                  <span class="stat-label">Total Students</span>
+                  <span class="stat-value">{{ sessionData.totalStudents || 0 }}</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Attendance Rate</span>
                   <span class="stat-value">{{ calculateAttendanceRate(sessionData) }}%</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Last Updated</span>
+                  <span class="stat-value">{{ formatTimeAgo(lastUpdate()) }}</span>
                 </div>
               </div>
             </div>
 
-            <div class="students-list clay-card">
-              <h3>📋 Students Who Marked Attendance ({{ attendedStudents().length }})</h3>
-              @if (attendedStudents().length > 0) {
-                <div class="student-items">
-                  @for (student of attendedStudents(); track student.userId) {
-                    <div class="student-item">
-                      <div class="student-avatar">{{ getInitials(student.userName) }}</div>
-                      <div class="student-info">
-                        <strong>{{ student.userName }}</strong>
-                        <small>{{ student.userEmail }}</small>
+            <div class="dashboard-row">
+              <div class="students-list clay-card">
+                <h3>📋 Students Who Marked Attendance</h3>
+                @if (attendedStudents().length > 0) {
+                  <div class="student-items">
+                    @for (student of attendedStudents(); track student.userId) {
+                      <div class="student-item">
+                        <div class="student-avatar">{{ getInitials(student.userName) }}</div>
+                        <div class="student-info">
+                          <strong>{{ student.userName }}</strong>
+                          <small>{{ student.userEmail }}</small>
+                        </div>
+                        <span class="timestamp">{{ formatTime(student.markedAt) }}</span>
                       </div>
-                      <span class="timestamp">{{ formatTime(student.markedAt) }}</span>
-                    </div>
-                  }
+                    }
+                  </div>
+                } @else {
+                  <div class="empty-state">
+                    <span class="empty-icon">⏳</span>
+                    <p>Waiting for students to mark attendance...</p>
+                  </div>
+                }
+              </div>
+
+              <div class="session-controls clay-card">
+                <h3>🎛️ Session Controls</h3>
+                <div class="control-buttons">
+                  <button class="clay-button full-width" (click)="downloadAttendance()">
+                    📥 Download Attendance
+                  </button>
+                  <button class="clay-button full-width secondary" (click)="shareSession()">
+                    📤 Share Session Link
+                  </button>
+                  <button class="clay-button full-width secondary" (click)="notifyStudents()">
+                    📢 Notify Students
+                  </button>
                 </div>
-              } @else {
-                <div class="empty-state">
-                  <span class="empty-icon">⏳</span>
-                  <p>Waiting for students...</p>
+                
+                <div class="qr-section">
+                  <h4>QR Code</h4>
+                  <div class="qr-placeholder">
+                    <p>📱</p>
+                    <small>QR Code would display here</small>
+                  </div>
                 </div>
-              }
+              </div>
             </div>
           } @else if (loading()) {
             <div class="loading-state clay-card">
@@ -90,7 +123,7 @@ import { interval, Subscription } from 'rxjs';
             </div>
           } @else {
             <div class="empty-state clay-card">
-              <p>Session not found</p>
+              <p>Session not found or has been closed</p>
               <button class="clay-button" routerLink="/faculty/dashboard">
                 Back to Dashboard
               </button>
@@ -140,6 +173,12 @@ import { interval, Subscription } from 'rxjs';
         display: flex;
         gap: 1rem;
       }
+
+      .icon-button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
     }
 
     .session-info {
@@ -179,7 +218,7 @@ import { interval, Subscription } from 'rxjs';
         }
       }
 
-      .session-stats {
+      .session-stats-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 1.5rem;
@@ -206,6 +245,13 @@ import { interval, Subscription } from 'rxjs';
           }
         }
       }
+    }
+
+    .dashboard-row {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
     }
 
     .students-list {
@@ -276,6 +322,54 @@ import { interval, Subscription } from 'rxjs';
       }
     }
 
+    .session-controls {
+      h3 {
+        margin: 0 0 1.5rem 0;
+        font-size: 1.125rem;
+        color: #2d3748;
+      }
+
+      .control-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-bottom: 2rem;
+      }
+
+      .qr-section {
+        padding-top: 1.5rem;
+        border-top: 2px solid rgba(163, 177, 198, 0.2);
+
+        h4 {
+          margin: 0 0 1rem 0;
+          color: #2d3748;
+          font-size: 0.875rem;
+          font-weight: 600;
+        }
+
+        .qr-placeholder {
+          aspect-ratio: 1;
+          background: rgba(124, 156, 191, 0.1);
+          border-radius: 8px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+
+          p {
+            margin: 0;
+            font-size: 3rem;
+          }
+
+          small {
+            color: #718096;
+            font-size: 0.75rem;
+          }
+        }
+      }
+    }
+
     .empty-state {
       text-align: center;
       padding: 3rem 2rem;
@@ -288,7 +382,7 @@ import { interval, Subscription } from 'rxjs';
       }
 
       p {
-        margin: 0 0 1rem 0;
+        margin: 0;
       }
     }
 
@@ -296,6 +390,10 @@ import { interval, Subscription } from 'rxjs';
       text-align: center;
       padding: 3rem;
       color: #718096;
+    }
+
+    .full-width {
+      width: 100%;
     }
 
     @keyframes pulse {
@@ -308,13 +406,17 @@ import { interval, Subscription } from 'rxjs';
         flex-direction: column;
       }
 
-      .session-stats {
+      .dashboard-row {
+        grid-template-columns: 1fr;
+      }
+
+      .session-stats-grid {
         grid-template-columns: repeat(2, 1fr);
       }
     }
 
     @media (max-width: 576px) {
-      .session-stats {
+      .session-stats-grid {
         grid-template-columns: 1fr;
       }
     }
@@ -328,7 +430,8 @@ export class ActiveSessionComponent implements OnInit, OnDestroy {
   sessionId: string | null = null;
   session = signal<any>(null);
   attendedStudents = signal<any[]>([]);
-  loading = signal<boolean>(false);lastUpdate = signal<Date>(new Date());
+  loading = signal<boolean>(false);
+  lastUpdate = signal<Date>(new Date());
   
   private refreshSubscription?: Subscription;
 
